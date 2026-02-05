@@ -4,15 +4,17 @@ on: [push]
 
 jobs:
   build:
-    runs-on: windows-latest  # 指定在 Windows 环境运行
+    runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    # 建议将 checkout 更新为 v4
+    - uses: actions/checkout@v4
 
+    # 建议将 setup-python 更新为 v5
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.9' # 根据需要选择版本
+        python-version: '3.9'
 
     - name: Install dependencies
       run: |
@@ -21,11 +23,14 @@ jobs:
 
     - name: Build EXE
       run: |
-        # 这里执行打包命令
+        # 注意：这里确保文件名与你仓库里的文件名一致
         pyinstaller --onefile --clean cjt_helper_update.py
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      # --- 关键修改：必须使用 v4 版本 ---
+      uses: actions/upload-artifact@v4
       with:
         name: native-messaging-host-exe
         path: dist/cjt_helper_update.exe
+        # v4 版本默认不压缩，如果你希望下载时是 zip 包，可以保持默认；
+        # 该配置通常不需要额外修改，直接用 v4 即可解决报错。
